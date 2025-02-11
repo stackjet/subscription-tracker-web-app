@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 
+import { Button } from "@/components/ui/button";
+
 import {
   CardTitle,
   CardDescription,
@@ -56,7 +58,7 @@ export function SignupForm() {
             </div>
           </CardContent>
           <CardFooter className="flex flex-col">
-            <button className="w-full">Sign Up</button>
+            <Button>Sign Up</Button>
           </CardFooter>
         </Card>
         <div className="mt-4 text-center text-sm">
