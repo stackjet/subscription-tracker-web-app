@@ -21,5 +21,23 @@ export async function registerUserAction(prevState: any, formData: FormData) {
     }
 
     const user = await createUserWithEmailAndPassword(auth, email, password);
-    console.log("user", user);
-}
+    
+    const payload = {
+        username: fields.username,
+        email: user.user.email,
+        firebase_api_id: user.user.uid,
+        access_token: user.user.getIdToken(),
+    };
+    console.log("payload", JSON.stringify(payload));
+
+    const response = await fetch(
+        process.env.WEB_API_URI + "/users/signup",
+        {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(payload),
+        }
+    );
+};
