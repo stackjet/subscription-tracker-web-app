@@ -1,6 +1,6 @@
 "use server";
 
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { UserCredential, createUserWithEmailAndPassword } from "firebase/auth";
 
 import { auth } from "@/app/firebase/config";
 
@@ -20,15 +20,15 @@ export async function registerUserAction(prevState: any, formData: FormData) {
         throw new Error("Invalid form data");
     }
 
-    const user = await createUserWithEmailAndPassword(auth, email, password);
-    
+    const user: UserCredential = await createUserWithEmailAndPassword(auth, email, password);
+    const token = await user.user.getIdToken();
+
     const payload = {
         username: fields.username,
         email: user.user.email,
         firebase_api_id: user.user.uid,
-        access_token: user.user.getIdToken(),
+        firebase_access_token: token,
     };
-    console.log("payload", JSON.stringify(payload));
 
     const response = await fetch(
         process.env.WEB_API_URI + "/users/signup",
