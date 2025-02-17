@@ -23,9 +23,7 @@ import { Input } from "@/components/ui/input";
 
 export function SignupForm() {
   const [formState, formAction] = useActionState(registerUserAction, undefined);
-  console.log("formState", formState);
-  console.log("formAction", formAction);
-
+  
   return (
     <div className="w-full max-w-md">
       <form action={formAction}>

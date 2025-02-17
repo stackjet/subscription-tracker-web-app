@@ -1,5 +1,11 @@
 "use client";
 
+import { useActionState } from "react";
+import { onAuthStateChanged } from "firebase/auth";
+
+import { auth } from "@/app/firebase/config";
+import { signInUserAction } from "@/data/actions/auth-actions";
+
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
@@ -17,9 +23,11 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 
 export function SigninForm() {
+  const [formState, formAction] = useActionState(signInUserAction, undefined);
+  
   return (
     <div className="w-full max-w-md">
-      <form>
+      <form action={formAction}>
         <Card>
           <CardHeader className="space-y-1">
             <CardTitle className="text-3xl font-bold">Sign In</CardTitle>
@@ -31,8 +39,8 @@ export function SigninForm() {
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input
-                id="identifier"
-                name="identifier"
+                id="email"
+                name="email"
                 type="text"
                 placeholder="username or email"
               />

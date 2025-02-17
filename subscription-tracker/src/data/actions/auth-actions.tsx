@@ -1,6 +1,12 @@
-"use server";
+"use client";
 
-import { UserCredential, createUserWithEmailAndPassword } from "firebase/auth";
+import { 
+    UserCredential, 
+    browserLocalPersistence,
+    createUserWithEmailAndPassword, 
+    setPersistence, 
+    signInWithEmailAndPassword,
+} from "firebase/auth";
 
 import { auth } from "@/app/firebase/config";
 
@@ -41,3 +47,18 @@ export async function registerUserAction(prevState: any, formData: FormData) {
         }
     );
 };
+
+
+export async function signInUserAction(prevState: any, formData: FormData) {
+    const email = formData.get("email");
+    const password = formData.get("password");
+
+    if (typeof email !== "string" || typeof password !== "string") {
+        throw new Error("Invalid form data");
+    }
+
+    const user = await signInWithEmailAndPassword(auth, email, password);
+    console.log("Signed In User: ", user);
+
+    return user;
+}
