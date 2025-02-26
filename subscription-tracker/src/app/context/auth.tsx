@@ -25,11 +25,9 @@ export const AuthProvider = ({ children }: Readonly<{ children: React.ReactNode 
     useEffect(() => {
         onAuthStateChanged(auth, async (user) => {
             if (user) {
-                console.log('User is signed in. User: ', user);
                 setCurrentUser(user);
             }
             else {
-                console.log('User is signed out.');
                 setCurrentUser(null);
             }
         });

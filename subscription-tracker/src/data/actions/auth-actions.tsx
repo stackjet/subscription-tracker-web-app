@@ -62,3 +62,7 @@ export async function signInUserAction(prevState: any, formData: FormData) {
 
     return user;
 }
+
+export async function signOutUserAction() {
+    auth.signOut();
+}
