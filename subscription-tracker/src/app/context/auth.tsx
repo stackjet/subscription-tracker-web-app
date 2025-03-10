@@ -25,9 +25,15 @@ export const AuthProvider = ({ children }: Readonly<{ children: React.ReactNode 
     useEffect(() => {
         onAuthStateChanged(auth, async (user) => {
             if (user) {
+                user.getIdToken().then((token) => {
+                    document.cookie = `access_token=${token}; path=/; Secure; HttpOnly`;
+                    document.cookie = `refresh_token=${user.refreshToken}; path=/; Secure; HttpOnly`;
+                });
                 setCurrentUser(user);
             }
             else {
+                document.cookie = "access_token=; path=/";
+                document.cookie = "refresh_token=; path=/";
                 setCurrentUser(null);
             }
         });
