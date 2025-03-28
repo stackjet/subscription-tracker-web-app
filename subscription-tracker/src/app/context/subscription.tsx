@@ -18,8 +18,6 @@ export default async function get_supported_subscriptions() {
 
     useEffect(() => {
         const fetchSubscriptions = async () => {
-            console.log(`Access Token: ${cookieStore.get("access_token")?.value}`);
-            console.log(`Refresh Token: ${cookieStore.get("refresh_token")?.value}`);
             const response = await fetch (
                 process.env.NEXT_PUBLIC_WEB_API_URI + "/user-subscription/supported-subscriptions",
                 {
@@ -30,12 +28,12 @@ export default async function get_supported_subscriptions() {
                     },
                 }
             );
-            console.log("Response: ", response.status);
+
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             const data = await response.json();
-            console.log("Supported Subscriptions: ", data);
+            
             setSubscriptions(data);
         }
         fetchSubscriptions();

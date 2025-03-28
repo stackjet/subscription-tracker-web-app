@@ -12,7 +12,6 @@ import { auth } from "@/app/firebase/config";
 
 
 export async function registerUserAction(prevState: any, formData: FormData) {
-    console.log("Hello From Register User Action");
 
     const email = formData.get("email");
     const password = formData.get("password");
@@ -58,7 +57,6 @@ export async function signInUserAction(prevState: any, formData: FormData) {
     }
 
     const user = await signInWithEmailAndPassword(auth, email, password);
-    console.log("Signed In User: ", user);
 
     return user;
 }

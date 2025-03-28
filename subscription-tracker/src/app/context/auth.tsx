@@ -6,6 +6,7 @@ import {
     useEffect,
     useState
 } from 'react';
+import { useRouter } from "next/navigation";
 import { onAuthStateChanged } from 'firebase/auth';
 
 import { auth } from '@/app/firebase/config';
@@ -21,19 +22,30 @@ export const useAuth = () => {
 
 export const AuthProvider = ({ children }: Readonly<{ children: React.ReactNode }>) => {
     const [currentUser, setCurrentUser] = useState<any | null>(null);
+    const router = useRouter()
 
     useEffect(() => {
         onAuthStateChanged(auth, async (user) => {
             if (user) {
-                user.getIdToken().then((token) => {
-                    document.cookie = `access_token=${token}; path=/; Secure; HttpOnly`;
-                    document.cookie = `refresh_token=${user.refreshToken}; path=/; Secure; HttpOnly`;
-                });
+                fetch("/api/login", {
+                    method: "POST",
+                    headers: {
+                      Authorization: `Bearer ${await user.getIdToken()}`,
+                    },
+                  }).then((response) => {
+                    if (response.status === 200) {
+                    }
+                  });
                 setCurrentUser(user);
             }
             else {
-                document.cookie = "access_token=; path=/";
-                document.cookie = "refresh_token=; path=/";
+                const response = await fetch("/api/logout", {
+                    method: "POST",
+                  });
+              
+                  if (response.status === 200) {
+                    router.push("/signin");
+                  }
                 setCurrentUser(null);
             }
         });

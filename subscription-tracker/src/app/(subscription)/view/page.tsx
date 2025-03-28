@@ -1,28 +1,25 @@
-import { cookies } from 'next/headers'
+'use server';
 
-import get_supported_subscriptions from "@/app/context/subscription";
+import { cookies } from 'next/headers';
+import axios from 'axios';
 
-
-const cookieStore = await cookies();
 
 export default async function UserSubscriptionsPage() {
-    console.log(`Access Token: ${cookieStore.get("access_token")?.value}`);
-    console.log(`\nRefresh Token: ${cookieStore.get("refresh_token")?.value}`);
-    // const subscriptions = await get_supported_subscriptions();
-    // console.log("Subscriptions: ", subscriptions);
-
-    const response = await fetch (
+    const cookieStore = await cookies();
+    const access_token = cookieStore.get("access_token")?.value;
+    const refresh_token = cookieStore.get("refresh_token")?.value;
+    const response = await axios.get(
         process.env.NEXT_PUBLIC_WEB_API_URI + "/user-subscription/supported-subscriptions",
         {
-            method: "GET",
             headers: {
                 "Content-Type": "application/json",
-                "x-access-token": cookieStore.get("access_token")?.value || "",
+                "Authorization": `Bearer ${access_token}`,
             },
+            withCredentials: true,
         }
-    );
-    console.log("Response: ", response.json());
-    if (!response.ok) {
+    )
+    
+    if (response.status !== 200) {
         throw new Error(`HTTP error! status: ${response.status}`);
     }
 
