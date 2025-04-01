@@ -36,12 +36,12 @@ export function SignupForm() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="username">Username</Label>
+              <Label htmlFor="company_name">Company Name</Label>
               <Input
-                id="username"
-                name="username"
+                id="company_name"
+                name="company_name"
                 type="text"
-                placeholder="username"
+                placeholder="Company Name"
               />
             </div>
             <div className="space-y-2">

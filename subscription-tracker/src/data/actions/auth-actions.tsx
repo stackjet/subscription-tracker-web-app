@@ -15,11 +15,55 @@ export async function registerUserAction(prevState: any, formData: FormData) {
 
     const email = formData.get("email");
     const password = formData.get("password");
+    const company_name = formData.get("company_name");
+    let tenant = null;
     const fields = {
         email,
         password,
         username: formData.get("username")
     }
+
+    console.log(`Company Name: ${company_name}`);
+    // if (company_name) {
+    //     await fetch("api/tenant", {
+    //         "method": "POST",
+    //         "body": JSON.stringify({
+    //             "company_name": company_name,
+    //         }),
+    //     })
+    //     .then((responseData) => {
+    //         console.log("Response Data: ", responseData);
+    //         tenant = await responseData.json();
+    //         console.log("Tenant: ", tenant);
+    //     })
+    // }
+    if (company_name) {
+        try {
+            const response = await fetch("api/tenant", {
+                method: "POST",
+                body: JSON.stringify({
+                    company_name: company_name,
+                }),
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error(`Failed to create tenant: ${response.statusText}`);
+            }
+
+            const responseData = await response.json();
+            console.log("Response Data: ", responseData);
+
+            // You can now use responseData as needed
+            tenant = responseData.tenant; // Example: assuming the response contains a "tenant" field
+        } catch (error) {
+            console.error("Error creating tenant:", error);
+        }
+    }
+
+    return null;
 
     if (typeof email !== "string" || typeof password !== "string") {
         throw new Error("Invalid form data");
