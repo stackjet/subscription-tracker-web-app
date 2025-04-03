@@ -15,6 +15,7 @@ export async function registerUserAction(prevState: any, formData: FormData) {
 
     const email = formData.get("email");
     const password = formData.get("password");
+    const username = formData.get("username");
     const company_name = formData.get("company_name");
     let tenant = null;
     const fields = {
@@ -24,25 +25,17 @@ export async function registerUserAction(prevState: any, formData: FormData) {
     }
 
     console.log(`Company Name: ${company_name}`);
-    // if (company_name) {
-    //     await fetch("api/tenant", {
-    //         "method": "POST",
-    //         "body": JSON.stringify({
-    //             "company_name": company_name,
-    //         }),
-    //     })
-    //     .then((responseData) => {
-    //         console.log("Response Data: ", responseData);
-    //         tenant = await responseData.json();
-    //         console.log("Tenant: ", tenant);
-    //     })
-    // }
     if (company_name) {
         try {
             const response = await fetch("api/tenant", {
                 method: "POST",
                 body: JSON.stringify({
                     company_name: company_name,
+                    admin: {
+                        email: email,
+                        password: password,
+                        username: username
+                    }
                 }),
                 headers: {
                     "Content-Type": "application/json",
@@ -62,7 +55,6 @@ export async function registerUserAction(prevState: any, formData: FormData) {
             console.error("Error creating tenant:", error);
         }
     }
-
     return null;
 
     if (typeof email !== "string" || typeof password !== "string") {
@@ -80,7 +72,7 @@ export async function registerUserAction(prevState: any, formData: FormData) {
     };
 
     const response = await fetch(
-        process.env.WEB_API_URI + "/users/signup",
+        process.env.NEXT_PUBLIC_WEB_API_URI + "/users/signup",
         {
             method: "POST",
             headers: {
