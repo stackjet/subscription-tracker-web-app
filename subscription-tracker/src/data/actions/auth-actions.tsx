@@ -54,8 +54,8 @@ export async function registerUserAction(prevState: any, formData: FormData) {
         } catch (error) {
             console.error("Error creating tenant:", error);
         }
+        return null;
     }
-    return null;
 
     if (typeof email !== "string" || typeof password !== "string") {
         throw new Error("Invalid form data");
