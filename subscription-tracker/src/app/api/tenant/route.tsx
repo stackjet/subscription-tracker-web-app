@@ -1,12 +1,4 @@
 import { auth as adminAuth } from "firebase-admin";
-import { 
-    UserCredential, 
-    browserLocalPersistence,
-    createUserWithEmailAndPassword, 
-    setPersistence, 
-    signInWithEmailAndPassword,
-} from "firebase/auth";
-import { auth as clientAuth } from "@/app/firebase/config";
 import { NextRequest, NextResponse } from "next/server";
 
 
@@ -22,6 +14,39 @@ export async function POST(request: NextRequest, response: NextResponse) {
             enabled: true,
             passwordRequired: true
         }
+    });
+    let tenantAuth = adminAuth().tenantManager().authForTenant(tenant.tenantId);
+    tenantAuth.createUser({
+        email: json_data.admin.email,
+        password: json_data.admin.password,
+        displayName: json_data.admin.username,
+        emailVerified: false,
+        disabled: false
+    })
+    .then(async (userRecord) => {
+        console.log("User created: ", userRecord.toJSON());
+        let payload = {
+            tenant_id: tenantResponseData.tenant_id,
+            email: userRecord.email,
+            firebase_api_id: userRecord.uid,
+            username: userRecord.displayName,
+        };
+
+        const userResponse = await fetch(
+            process.env.NEXT_PUBLIC_WEB_API_URI + "/users/signup",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(payload),
+            }
+        );
+        let userResponseData = await userResponse.json();
+        console.log("User Response: ", userResponseData);
+    })
+    .catch((error) => {
+        console.error("Error creating user: ", error);
     });
     
     let tenantData = {
@@ -43,28 +68,6 @@ export async function POST(request: NextRequest, response: NextResponse) {
 
     let tenantResponseData = await resp.json();
     console.log("Response: ", tenantResponseData);
-
-    const user: UserCredential = await createUserWithEmailAndPassword(clientAuth, json_data.admin.email, json_data.admin.password);
-    const token = await user.user.getIdToken();
-    const payload = {
-        tenant_id: tenantResponseData.tenant_id,
-        email: user.user.email,
-        firebase_api_id: user.user.uid,
-        username: json_data.admin.username,
-    };
-
-    const userResponse = await fetch(
-        process.env.NEXT_PUBLIC_WEB_API_URI + "/users/signup",
-        {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(payload),
-        }
-    );
-    let userResponseData = await userResponse.json();
-    console.log("User Response: ", userResponseData);
 
     return NextResponse.json(tenantData)
 };
