@@ -87,12 +87,31 @@ export async function registerUserAction(prevState: any, formData: FormData) {
 export async function signInUserAction(prevState: any, formData: FormData) {
     const email = formData.get("email");
     const password = formData.get("password");
+    console.log(`[Sign In] Email: ${email}, Password: ${password}`);
 
     if (typeof email !== "string" || typeof password !== "string") {
         throw new Error("Invalid form data");
     }
 
+    let user_tenant = await fetch(
+        `${process.env.NEXT_PUBLIC_WEB_API_URI}/tenant/user/email/${email}`,
+        {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        }
+    );
+    if (!user_tenant.ok) {
+        throw new Error(`Failed to fetch user tenant: ${user_tenant.statusText}`);
+    }
+    let user_tenant_data = await user_tenant.json();
+
+    console.log("User Sign In: ", user_tenant_data);
+    auth.tenantId = user_tenant_data.tenant_identity_platform_id;
+
     const user = await signInWithEmailAndPassword(auth, email, password);
+    console.log("User Signed In: ", user);
 
     return user;
 }
