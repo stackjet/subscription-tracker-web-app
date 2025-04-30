@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import { onAuthStateChanged } from 'firebase/auth';
 
 import { auth } from '@/app/firebase/config';
+import { encrypt } from '../lib/encryption';
 
 
 export const AuthContext = createContext<any | null>({
@@ -30,7 +31,8 @@ export const AuthProvider = ({ children }: Readonly<{ children: React.ReactNode 
                 fetch("/api/login", {
                     method: "POST",
                     headers: {
-                      Authorization: `Bearer ${await user.getIdToken()}`,
+                      // To Do: Encrypt user.getIdToken() before passing it to the API
+                      Authorization: `Bearer ${encrypt(await user.getIdToken())}`,
                     },
                   }).then((response) => {
                     if (response.status === 200) {

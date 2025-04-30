@@ -5,14 +5,16 @@ import { auth } from "firebase-admin";
 import { Button, buttonVariants  } from "@/components/ui/button"
 import { cookies } from 'next/headers';
 import { signOutUserAction } from '@/data/actions/auth-actions';
+import { decrypt } from './lib/encryption';
 
 const Header = async () => {
     const _cookies = await cookies();
-    const accessToken = _cookies.get("access_token")?.value;
+    const encryptedAccessToken = _cookies.get("access_token")?.value;
     const token = null;
     let currentUser = null;
 
-    if (accessToken) {
+    if (encryptedAccessToken) {
+        let accessToken = decrypt(encryptedAccessToken);
         try {
             const decodedToken = await auth().verifyIdToken(accessToken);
             currentUser = { email: decodedToken.email }; // Extract user details from the token

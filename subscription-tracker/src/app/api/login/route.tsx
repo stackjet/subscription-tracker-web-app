@@ -2,6 +2,8 @@ import { auth } from "firebase-admin";
 import { cookies, headers } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
+import { decrypt } from "@/app/lib/encryption";
+
 
 export async function POST(request: NextRequest, response: NextResponse) {
     const _headers = await headers();
@@ -15,12 +17,17 @@ export async function POST(request: NextRequest, response: NextResponse) {
     );
     }
 
+    console.log("Authorization Header: ", authorization);
     const token = authorization?.split("Bearer ")[1];
+    let decryptedToken = decrypt(token);
+    console.log("Decrypted Token: ", decryptedToken);
+    console.log("Token: ", token);
+    // To Do: Decrypt the token
     if (!token) {
         return NextResponse.json({ error: "No Token" }, { status: 401 });
     }
 
-    const decodedToken = await auth().verifyIdToken(token);
+    const decodedToken = await auth().verifyIdToken(decryptedToken);
     console.log("Decoded Token: ", decodedToken);
     if (!decodedToken) {
         return NextResponse.json({ error: "Invalid Token" }, { status: 401 });
