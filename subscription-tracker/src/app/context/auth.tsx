@@ -6,12 +6,14 @@ import {
     useEffect,
     useState
 } from 'react';
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { onAuthStateChanged } from 'firebase/auth';
 
 import { auth } from '@/app/firebase/config';
 import { encrypt } from '../lib/encryption';
 
+// Define public routes that don't require authentication
+const publicRoutes = ["/signin", "/signup", "/signup_v2"];
 
 export const AuthContext = createContext<any | null>({
     currentUser: null,
@@ -23,7 +25,8 @@ export const useAuth = () => {
 
 export const AuthProvider = ({ children }: Readonly<{ children: React.ReactNode }>) => {
     const [currentUser, setCurrentUser] = useState<any | null>(null);
-    const router = useRouter()
+    const router = useRouter();
+    const pathname = usePathname();
 
     useEffect(() => {
         onAuthStateChanged(auth, async (user) => {
@@ -46,12 +49,16 @@ export const AuthProvider = ({ children }: Readonly<{ children: React.ReactNode 
                   });
               
                   if (response.status === 200) {
-                    router.push("/signin");
+                    // Only redirect to signin if we're not on a public route
+                    const isPublicRoute = publicRoutes.some(route => pathname?.startsWith(route));
+                    if (!isPublicRoute) {
+                        router.push("/signin");
+                    }
                   }
                 setCurrentUser(null);
             }
         });
-    }, []);
+    }, [pathname]);
 
     return (
         <AuthContext.Provider value={{ currentUser }}>

@@ -4,9 +4,17 @@ import type { NextRequest } from "next/server";
 // these are the routes that require authentication
 const protectedRoutes = ["/admin"];
 
+// these are public routes that should never require authentication
+const publicRoutes = ["/signin", "/signup", "/signup_v2"];
+
 export async function middleware(request: NextRequest) {
   const { pathname, origin } = request.nextUrl;
   const session = request.cookies.get("session");
+
+  // Allow public routes to proceed without authentication
+  if (publicRoutes.some(route => pathname.startsWith(route))) {
+    return NextResponse.next();
+  }
 
   // Determine if the request is for a route that requires authentication
   const requiresAuth = protectedRoutes.some((route) =>
