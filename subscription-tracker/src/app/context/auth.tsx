@@ -35,7 +35,7 @@ export const AuthProvider = ({ children }: Readonly<{ children: React.ReactNode 
                     const response = await fetch("/api/login", {
                         method: "POST",
                         headers: {
-                            Authorization: `Bearer ${encrypt(await user.getIdToken())}`,
+                            Authorization: `Bearer ${await user.getIdToken()}`,
                         },
                     });
                     

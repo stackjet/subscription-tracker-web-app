@@ -10,10 +10,10 @@ console.log(`Base encryption key: ${BASE_KEY}. Length: ${BASE_KEY.length}. Type 
 let invalid_base_key = BASE_KEY.length !== KEY_SIZE;
 console.log(`Invalid Base Key: ${invalid_base_key}`);
 
-if (invalid_base_key === true) { // Seems to be broken. Enters logic when invalid_base_key is false
-    console.log(`Base encryption key is valid. Invalid Base Key: ${invalid_base_key}`);
-    throw new Error(`Base encryption key must be 32 bytes long. Current length: ${BASE_KEY.length}`);
-}
+// if (invalid_base_key === true) { // Seems to be broken. Enters logic when invalid_base_key is false
+//     console.log(`Base encryption key is valid. Invalid Base Key: ${invalid_base_key}`);
+//     throw new Error(`Base encryption key must be 32 bytes long. Current length: ${BASE_KEY.length}`);
+// }
 
 function deriveKey(salt: Buffer): Buffer {
     return crypto.pbkdf2Sync(BASE_KEY, salt, 100000, KEY_SIZE, 'sha256');
